@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personaje</title>
+</head>
+<body>
+    <h2>Crear Nuevo Personaje</h2>
+    <form action="/crear-personaje" method="POST">
+        <label for="nombre">Nombre del Personaje:</label>
+        <input type="text" id="nombre" name="nombre" required>
+
+        <label for="clase">Clase:</label>
+        <select id="clase" name="clase">
+            <option value="Guerrero">Guerrero</option>
+            <option value="Mago">Mago</option>
+            <option value="Arquero">Arquero</option>
+        </select>
+
+        <button type="submit">Guardar Personaje</button>
+    </form>
+    
+    <h2>Lista de Personajes</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Clase</th>
+                <th>Nivel</th>
+                <th>Vida</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for personaje in personajes %}
+            <tr>
+                <td>{{ personaje.nombre }}</td>
+                <td>{{ personaje.clase }}</td>
+                <td>{{ personaje.nivel }}</td>
+                <td>{{ personaje.vida }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
