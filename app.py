@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, redirect, render_template, request, url_for
 from Modelo.Personaje import Personaje
 from Modelo.PersonajeDAO import PersonajeDAO
 
@@ -7,17 +7,16 @@ app = Flask(__name__)
 
 @app.route('/personajes', methods=['GET'])
 def obtener_personajes():
-    return jsonify(dao.obtener_personajes())
+    return render_template('index.html', personajes=dao.obtener_personajes())
 
 @app.route('/personajes', methods=['POST'])
 def agregar_personaje():
-    data = request.get_json()
-    nombre = data.get('nombre')
-    clase = data.get('clase')
-    nivel = data.get('nivel')
-    vida = data.get('vida')
+    nombre = request.form.get('nombre')
+    clase = request.form.get('clase')
+    nivel = request.form.get('nivel')
+    vida = request.form.get('vida')
     dao.agregar_personaje(Personaje(nombre, clase, nivel, vida))
-    return jsonify({"message": "Personaje agregado correctamente"})
+    return redirect(url_for('obtener_personajes'))
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True)
