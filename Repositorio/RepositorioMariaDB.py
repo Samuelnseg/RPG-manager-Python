@@ -67,10 +67,19 @@ class RepositorioMariaDB(PersonajeRepository):
         valores = (personaje.nombre, self._id_clase[personaje.clase], personaje.nivel,
                    personaje.vida, personaje.ataque, personaje.oro,
                    getattr(personaje, "mana", None), getattr(personaje, "precision", None))
-        # >>> SALA 2.4 · MariaDB: guardar con INSERT
-        # Arma este bloque en el Edificio de la Persistencia (pestaña Python),
-        # pulsa «Copiar bloque» y pégalo entre estas dos marcas.
-        # <<< FIN SALA 2.4
+        with self._conectar() as conexion:
+            try:
+                with conexion.cursor() as cursor:
+                    cursor.execute(sql, valores)
+                    personaje.id = cursor.lastrowid    # id generado por AUTO_INCREMENT
+                    conexion.commit()                       # sin commit, el INSERT no queda guardado
+            except pymysql.err.IntegrityError as error:
+                conexion.rollback()
+                if error.args[0] == ERROR_DUPLICADO:
+                    raise DatoDuplicadoException(personaje.nombre) from error
+                raise
+        return personaje
+
 
     def buscar_por_id(self, id):
         encontrados = self._consultar_personajes(SELECT_PERSONAJE + " WHERE p.id_personaje = %s", (id,))
@@ -106,10 +115,19 @@ class RepositorioMariaDB(PersonajeRepository):
         return filas > 0 or self.buscar_por_id(personaje.id) is not None
 
     def eliminar(self, id):
-        # >>> SALA 2.5 · MariaDB: eliminar y el error 1451
-        # Arma este bloque en el Edificio de la Persistencia (pestaña Python),
-        # pulsa «Copiar bloque» y pégalo entre estas dos marcas.
-        # <<< FIN SALA 2.5
+        with self._conectar() as conexion:
+            try:
+                with conexion.cursor() as cursor:
+                    filas = cursor.execute("DELETE FROM personaje WHERE id_personaje = %s", (id,))
+                conexion.commit()
+            except pymysql.err.IntegrityError as error:
+                conexion.rollback()
+                if error.args[0] == ERROR_FK_EN_USO:
+                    # inventario y personaje_mision se borran en cascada, combate no
+                    raise DatoEnUsoException(id) from error
+                raise
+        return filas > 0
+
 
     def listar_inventario(self, id_personaje):
         sql = """SELECT i.nombre, i.tipo, i.valor, inv.cantidad
