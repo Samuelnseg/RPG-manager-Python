@@ -42,10 +42,21 @@ def main():
         if not inventario:
             print("  (vacío)")
 
-    # >>> SALA A.1 · Recorrido completo: Kaelen
-    # Arma este bloque en el Edificio de la Persistencia (pestaña Python),
-    # pulsa «Copiar bloque» y pégalo entre estas dos marcas.
-    # <<< FIN SALA A.1
+    try:
+        nuevo = service.crear(NOMBRE_PRUEBA, "Arquero", nivel=3, vida=90, ataque=18, oro="12.50")
+    except ValidacionException as e:
+        print(f"\n4. No se pudo crear: {e}")
+        return
+    print(f"\n4. Creado: {nuevo.nombre} con id {nuevo.id}")
+
+    actualizado = service.actualizar_vida(nuevo.id, 55)
+    print(f"5. Vida de {actualizado.nombre} actualizada a {service.obtener(nuevo.id).vida}")
+
+    service.eliminar(nuevo.id)
+    print(f"6. {NOMBRE_PRUEBA} eliminado")
+
+    imprimir_lista("7. Todos los personajes otra vez", service.listar())
+
 
     print("\n8. Validaciones del Service")
     for intento in ({"nombre": "", "clase": "Mago"},
