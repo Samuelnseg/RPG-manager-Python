@@ -7,6 +7,9 @@ Service trabaja con ids numéricos. Este repositorio agrega a cada documento un
 campo numérico id_personaje, tomado de un contador en la colección
 "contadores" (el equivalente al AUTO_INCREMENT). El Service nunca se entera.
 """
+import certifi
+from pymongo import ASCENDING, MongoClient, ReturnDocument
+
 from decimal import Decimal
 
 from pymongo import ASCENDING, MongoClient, ReturnDocument
@@ -21,7 +24,11 @@ class RepositorioMongo(PersonajeRepository):
 
     def __init__(self, uri, base, cliente=None):
         # "cliente" permite inyectar un cliente de pruebas; en la app se crea con la uri
-        self._cliente = cliente if cliente is not None else MongoClient(uri)
+        self._cliente = (
+            cliente
+            if cliente is not None
+            else MongoClient(uri, tlsCAFile=certifi.where())
+        )
         db = self._cliente[base]
         self._personajes = db["personajes"]
         self._contadores = db["contadores"]
