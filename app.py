@@ -1,22 +1,44 @@
-from flask import Flask, jsonify, redirect, render_template, request, url_for
-from Controlador.PersonajeControlador import PersonajeControlador
-from Modelo.Personaje import Personaje
+"""Punto de arranque del RPG Manager (Flask).
 
-pc = PersonajeControlador()
-app = Flask(__name__)
+1. Lee config.ini (copia config.example.ini y pon tus datos).
+2. La fábrica crea el repositorio que diga [app] repositorio.
+3. El Service recibe ese repositorio por el constructor.
+4. El controlador recibe el Service.
+"""
+import configparser
+import os
+import sys
 
-@app.route('/personajes', methods=['GET'])
-def obtener_personajes():
-    return render_template('index.html', personajes=pc.obtener_personajes())
+from flask import Flask
 
-@app.route('/personajes', methods=['POST'])
-def agregar_personaje():
-    nombre = request.form.get('nombre')
-    clase = request.form.get('clase')
-    nivel = int(request.form.get('nivel'))
-    vida = int(request.form.get('vida'))    
-    mensaje = pc.agregar_personaje(nombre, clase, nivel, vida)
-    return redirect(url_for('agregar_personaje'))
+from Controlador.PersonajeControlador import crear_controlador
+from Repositorio.repository_factory import crear_repositorio
+from Servicio.PersonajeService import PersonajeService
 
-if __name__ == '__main__':
-    app.run(debug=True)
+CARPETA = os.path.dirname(os.path.abspath(__file__))
+
+
+def leer_configuracion(ruta=None):
+    ruta = ruta or os.path.join(CARPETA, "config.ini")
+    if not os.path.exists(ruta):
+        sys.exit("No existe config.ini. Copia config.example.ini como config.ini y pon tus datos.")
+    cfg = configparser.ConfigParser()
+    cfg.read(ruta, encoding="utf-8")
+    return cfg
+
+
+def crear_app(cfg=None, repositorio=None):
+    cfg = cfg or leer_configuracion()
+    repositorio = repositorio or crear_repositorio(cfg)   # aquí se elige el motor
+    service = PersonajeService(repositorio)                # inyección por constructor
+
+    app = Flask(__name__)
+    app.json.ensure_ascii = False
+    app.register_blueprint(crear_controlador(service, cfg.get("app", "repositorio")))
+    return app
+
+
+
+if __name__ == "__main__":
+    aplicacion = crear_app()
+    aplicacion.run(port=5000, debug=False)

@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block titulo %}Error{% endblock %}
+{% block contenido %}
+  <div class="alert alert-danger" role="alert">{{ mensaje }}</div>
+  <a class="btn btn-outline-secondary" href="{{ url_for('personajes.listar') }}">Volver a la lista</a>
+{% endblock %}

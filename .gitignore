@@ -1,13 +1,14 @@
-# Entorno virtual de Python
-venv/
-.venv/
+# Archivos con contraseñas: NUNCA se suben (sí se suben los .example)
+config.properties
+config.ini
 
-# Archivos Python
+# Java / Maven / NetBeans
+target/
+nbproject/private/
+*.class
+
+# Python
 __pycache__/
 *.pyc
-
-# Configuración sensible
-.env
-
-# Archivos temporales
-*.log
+.venv/
+venv/

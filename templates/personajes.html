@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge_clase, alerta %}
+{% block titulo %}Personajes{% endblock %}
+{% block contenido %}
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 mb-0">Personajes</h1>
+    <a class="btn btn-success" href="{{ url_for('personajes.formulario') }}">+ Nuevo personaje</a>
+  </div>
+
+  <form class="row g-2 align-items-end mb-3" method="get" action="{{ url_for('personajes.listar') }}">
+    <div class="col-auto">
+      <label class="form-label mb-1" for="clase">Filtrar por clase</label>
+      <select class="form-select" id="clase" name="clase">
+        <option value="">Todas</option>
+        {% for c in clases %}
+          <option value="{{ c }}" {% if c == clase_filtro %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-outline-primary" type="submit">Filtrar</button>
+    </div>
+  </form>
+
+  {{ alerta(error) }}
+
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-dark">
+          <tr><th>Id</th><th>Nombre</th><th>Clase</th><th class="text-end">Nivel</th>
+              <th class="text-end">Vida</th><th class="text-end">Ataque</th><th class="text-end">Oro</th></tr>
+        </thead>
+        <tbody>
+          {% for p in personajes %}
+            <tr>
+              <td>{{ p.id }}</td>
+              <td><a class="fw-semibold text-decoration-none" href="{{ url_for('personajes.detalle', id=p.id) }}">{{ p.nombre }}</a></td>
+              <td>{{ badge_clase(p.clase) }}</td>
+              <td class="text-end">{{ p.nivel }}</td>
+              <td class="text-end">{{ p.vida }}</td>
+              <td class="text-end">{{ p.ataque }}</td>
+              <td class="text-end">{{ p.oro }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="7" class="text-center text-muted py-4">No hay personajes.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,9 @@
+{# Color del badge según la clase del personaje #}
+{% macro badge_clase(clase) -%}
+  {%- set colores = {"Guerrero": "danger", "Mago": "primary", "Arquero": "success"} -%}
+  <span class="badge text-bg-{{ colores.get(clase, 'secondary') }}">{{ clase }}</span>
+{%- endmacro %}
+
+{% macro alerta(error) -%}
+  {% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
+{%- endmacro %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% from "_macros.html" import alerta %}
+{% block titulo %}Nuevo personaje{% endblock %}
+{% block contenido %}
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h1 class="h4 card-title mb-3">Nuevo personaje</h1>
+          {{ alerta(error) }}
+          <form method="post" action="{{ url_for('personajes.crear') }}">
+            <div class="mb-3">
+              <label class="form-label" for="nombre">Nombre</label>
+              <input class="form-control" id="nombre" name="nombre" value="{{ datos.get('nombre', '') }}" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="clase">Clase</label>
+              <select class="form-select" id="clase" name="clase">
+                {% for c in clases %}
+                  <option value="{{ c }}" {% if c == datos.get('clase') %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <label class="form-label" for="nivel">Nivel</label>
+                <input class="form-control" id="nivel" name="nivel" type="number" value="{{ datos.get('nivel', 1) }}">
+              </div>
+              <div class="col-6">
+                <label class="form-label" for="vida">Vida</label>
+                <input class="form-control" id="vida" name="vida" type="number" value="{{ datos.get('vida', 100) }}">
+              </div>
+              <div class="col-6">
+                <label class="form-label" for="ataque">Ataque</label>
+                <input class="form-control" id="ataque" name="ataque" type="number" value="{{ datos.get('ataque', 10) }}">
+              </div>
+              <div class="col-6">
+                <label class="form-label" for="oro">Oro</label>
+                <input class="form-control" id="oro" name="oro" type="number" step="0.01" value="{{ datos.get('oro', 0) }}">
+              </div>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-success" type="submit">Crear</button>
+              <a class="btn btn-outline-secondary" href="{{ url_for('personajes.listar') }}">Cancelar</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
