@@ -1,4 +1,4 @@
-from Servicio.PersonajeServicio import PersonajeServicio
+from Servicio.PersonajeService import PersonajeServicio
 
 class PersonajeControlador:
     def __init__(self):
